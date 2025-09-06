@@ -1,0 +1,2444 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUÁN CHAY 6 NGON</title>
+    <meta name="theme-color" content="#02a046">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .header {
+            background: white;
+            padding: 0.5px 6px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-title {
+            font-size: 26px;
+            font-weight: 600;
+            color: #02a046;
+            padding: 4px;
+        }
+        .close-btn, .menu-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #666;
+            cursor: pointer;
+            padding: 5px;
+        }
+        .category-tabs {
+            display: flex;
+            background: white;
+            padding: 5px;
+            gap: 8px;
+            overflow-x: auto;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .category-tab {
+            padding: 7px;
+            border-radius: 12px;
+            border: none;
+            font-size: 15px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+            background: #f0f0f0;
+            color: #666;
+        }
+        .category-tab.active {
+            background: #02a046;
+            color: white;
+            font-weight: 600;
+        }
+        .featured-banner {
+            background: linear-gradient(135deg, #02a046, #28a745);
+            margin: 10px 6px;
+            border-radius: 15px;
+            padding: 10px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .featured-banner::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 100%;
+            width: 200px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10%;
+        }
+        .featured-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .featured-subtitle {
+            font-size: 16px;
+        }
+        .products-container {
+            padding: 6px 10px 80px;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 40px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+        .product-card.disabled {
+            opacity: 0.6;
+        }
+        .product-image {
+            position: relative;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #02a046, #28a745);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 30px;
+            text-align: center;
+            padding: 0.5px;
+            margin: 0.5px;
+            border-radius: 15px;
+        }
+        .product-image::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px;
+            border-radius: 15px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        
+        
+        .special-label::before {
+            content: 'Hết hàng';
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            font-size: 12px !important;
+        }
+        .product-info {
+            padding: 8px;
+        }
+        .product-name {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: #333;
+            line-height: 1.0;
+            height: 24px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+        .product-price {
+            font-size: 22px;
+            font-weight: bold;
+            color: #02a046;
+        }
+        .product-controls {
+            display: flex;
+            align-items: center;
+        }
+        .add-btn {
+            background: #02a046;
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .add-btn:hover {
+            background: #018a3d;
+            transform: scale(1.1);
+        }
+        .add-btn.disabled {
+            background: #dc3545;
+            cursor: not-allowed;
+            font-size: 14px;
+            width: auto;
+            padding: 4px 6px;
+        }
+        .add-btn.disabled:hover {
+            background: #dc3545;
+            transform: none;
+        }
+        .quantity-controls {
+            display: none;
+            align-items: center;
+            gap: 6px;
+        }
+        .quantity-controls.show {
+            display: flex;
+        }
+        .quantity-btn {
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .quantity-btn:hover {
+            background: #e0e0e0;
+            transform: scale(1.1);
+        }
+        .quantity-btn.increase {
+            background: #02a046;
+            color: white;
+        }
+        .quantity-btn.increase:hover {
+            background: #018a3d;
+        }
+        .quantity-display {
+            font-weight: 600;
+            min-width: 18px;
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+        }
+        .cart-summary {
+            position: fixed;
+            bottom: 48px;
+            left: 10px;
+            right: 10px;
+            background: #02a046;
+            color: white;
+            border-radius: 25px;
+            padding: 7px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 99;
+            box-shadow: 0 4px 15px rgba(2, 160, 70, 0.3);
+        }
+        .cart-summary.show {
+            display: flex;
+        }
+        .cart-summary-left {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .cart-items-count, .cart-total-price {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+        .cart-total-price {
+            font-size: 17px;
+            font-weight: bold;
+        }
+        .view-cart-btn {
+            background: #f0f8f4;
+            color: #02a046;
+            border: none;
+            padding: 8px;
+            border-radius: 20px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .view-cart-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            z-index: 100;
+            height: 50px;
+        }
+        .nav-item {
+            flex: 1;
+            padding: 4px;
+            text-align: center;
+            border: none;
+            background: none;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-decoration: none;
+            color: #666;
+        }
+        .nav-item.active {
+            color: #02a046;
+            background: #f0f8f4;
+        }
+        .nav-item:hover {
+            background: #f8f8f8;
+        }
+        .nav-icon {
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+        .nav-text {
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .cart-badge {
+            position: absolute;
+            top: 1px;
+            right: 5px;
+            background: #02a046;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .cart-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 50px;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2px;
+        }
+        .cart-modal.show {
+            display: flex;
+        }
+        .cart-modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .cart-modal-header {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #02a046;
+        }
+        .cart-modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .cart-modal-body {
+            padding: 6px;
+            flex: 1;
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+        }
+        .cart-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            align-items: center;
+            padding: 7px 0;
+            border-bottom: 1px solid #f0f0f0;
+            gap: 10px;
+        }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        .cart-item-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cart-item-image {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #02a046, #28a745);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 38px;
+            font-weight: bold;
+            flex-shrink: 0;
+            overflow: hidden;
+            border: 0.2px solid #02a046;
+        }
+        .cart-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .cart-item-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .cart-item-price {
+            font-size: 16px;
+            color: #666;
+        }
+        .cart-item-amount {
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            min-width: 80px;
+            text-align: right;
+            padding-right: 20px;
+        }
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .modal-quantity-btn {
+            font-size: 22px;
+            background: #f0f0f0;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        .modal-quantity-btn:hover {
+            background: #e0e0e0;
+        }
+        .modal-quantity-btn.increase {
+            background: #02a046;
+            color: white;
+        }
+        .modal-quantity-btn.increase:hover {
+            background: #018a3d;
+        }
+        .modal-quantity-display {
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+        }
+        .cart-modal-footer {
+            padding: 10px;
+            border-top: 1px solid #e0e0e0;
+            margin-top: auto;
+        }
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 17px;
+            font-weight: bold;
+            padding: 6px;
+            background: #f8f9fa;
+            color: #02a046;
+			border: 0.5px solid #02a046;
+            border-radius: 20px;
+        }
+        .back-to-menu-btn {
+            flex: 1;
+            background: #fff4cd;
+            color: #333;
+            border: none;
+            padding: 8px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .back-to-menu-btn:hover {
+            background: #f1c40f;
+        }
+        .order-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .order-btn {
+            flex: 1;
+            background: #02a046;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .order-btn:hover {
+            background: #018a3d;
+        }
+        .order-form {
+            display: none;
+            margin-top: 20px;
+        }
+        .order-form.show {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .form-input {
+            width: 100%;
+            padding: 6px;
+            border: 0.2px outset #02a046;
+            border-radius: 20px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #02a046;
+        }
+        .form-input.error {
+            border-color: #dc3545;
+        }
+        .error-message {
+            color: red !important;
+            font-size: 12px !important;
+            margin-top: 4px;
+            display: none;
+        }
+        .address-input-group {
+            position: relative;
+        }
+        .address-input-group .form-input {
+            padding-right: 40px;
+        }
+        .map-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #02a046;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 2px;
+        }
+        .map-icon:hover {
+            color: #018a3d;
+        }
+        .form-textarea {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 15px;
+            resize: vertical;
+            min-height: 30px;
+            max-height: 33px;
+            font-family: inherit;
+        }
+        .form-textarea:focus {
+            outline: none;
+            border-color: #02a046;
+        }
+        .submit-btn {
+            width: 100%;
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .submit-btn:hover {
+            background: #218838;
+        }
+        .submit-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .empty-cart {
+            text-align: center;
+            color: #666;
+            padding: 40px 20px;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .loading-overlay.show {
+            display: flex;
+        }
+        .loading-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 300px;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #02a046;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .custom-alert {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        .custom-alert.show {
+            display: flex;
+        }
+        .custom-alert-content {
+            background: white;
+            border-radius: 15px;
+            width: 100%;
+            height: 90vh;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .custom-alert-header {
+            background: #02a046;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .custom-alert-body {
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+            font-size: 15px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            font-family: Arial, sans-serif;
+        }
+        .custom-alert-footer {
+            padding: 12px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+        .custom-alert-btn {
+            flex: 1;
+            padding: 7px;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: #02a046;
+            color: white;
+        }
+        .btn-secondary {
+            background: #fff3cd;
+            color: #333;
+        }
+        .admin-popup { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,.6); 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 2000; 
+            padding: 10px; 
+        }
+        .admin-popup-content { 
+            background: #fff; 
+            padding: 15px; 
+            border-radius: 12px; 
+            width: 105%; 
+            height: 92vh; 
+            max-width: 768px; 
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 0 10px 30px rgba(0,0,0,.2); 
+        }
+        .admin-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 8px; 
+            margin-bottom: 10px; 
+        }
+        .admin-header h2 { 
+            margin: 0; 
+            font-size: 18px;
+            color: #02a046;
+        }
+        .admin-header button { 
+            background: none; 
+            border: none; 
+            font-size: 18px; 
+            cursor: pointer; 
+            padding: 4px 6px; 
+        }
+        .admin-body { 
+            flex: 1; 
+            overflow-y: auto; 
+        }
+        .password-input-container {
+            position: relative;
+        }
+        .password-input-container.checking input {
+            border-color: #02a046;
+            background: #f0fdf4;
+        }
+        .password-spinner {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 20px;
+            border: 2px solid #e5e7eb;
+            border-top: 2px solid #02a046;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        .password-input-container.checking .password-spinner {
+            display: block;
+        }
+        .menu-manager.disabled { 
+            opacity: .5; 
+            pointer-events: none; 
+        }
+        .menu-item { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            gap: 10px; 
+            padding: 6px 0; 
+            border-bottom: 1px dashed #eee; 
+        }
+        .menu-name { 
+            font-size: 16px; 
+            line-height: 1.2; 
+            font-weight: 600;
+            color: #02a047;
+        }
+        .price { 
+            color: #666; 
+            font-size: 13px; 
+        }
+        .switch { 
+            position: relative; 
+            display: inline-block; 
+            width: 50px; 
+            height: 24px; 
+        }
+        .switch input { 
+            display: none; 
+        }
+        .slider { 
+            position: absolute; 
+            cursor: pointer; 
+            inset: 0; 
+            background-color: red; 
+            transition: .25s; 
+            border-radius: 34px; 
+        }
+        .slider:before { 
+            content: ""; 
+            position: absolute; 
+            height: 18px; 
+            width: 18px; 
+            left: 3px; 
+            bottom: 3px; 
+            background: #fff; 
+            transition: .25s; 
+            border-radius: 999px; 
+            box-shadow: 0 1px 2px rgba(0,0,0,.2); 
+        }
+        input:checked + .slider { 
+            background-color: #02a046; 
+        }
+        input:checked + .slider:before { 
+            transform: translateX(26px); 
+        }
+        .admin-alert { 
+            display: none; 
+            padding: 10px 12px; 
+            border-radius: 10px; 
+            margin: 8px 0; 
+            font-size: 13px; 
+            border-left: 4px solid; 
+            background: #f9fafb; 
+        }
+        .admin-alert.show { 
+            display: block; 
+        }
+        .admin-alert.error { 
+            color: #991b1b; 
+            border-color: #d93025; 
+            background: #fef2f2; 
+        }
+        .admin-alert.info { 
+            color: #1f2937; 
+            border-color: #93c5fd; 
+            background: #eff6ff; 
+        }
+        .admin-alert.success { 
+            color: #065f46; 
+            border-color: #34d399; 
+            background: #ecfdf5; 
+        }
+        .custom-alert.shop-info .custom-alert-content {
+            height: auto !important;
+            max-height: 60vh !important;
+        }
+        .shop-info-item {
+            margin: -10px 0;
+            line-height: 0.5;
+        }
+        .shop-info-item a {
+            color: #02a046;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .shop-info-item a:hover {
+            text-decoration: underline;
+        }
+        .custom-select-wrapper {
+            position: relative;
+        }
+        .custom-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .dropdown-group {
+            border-bottom: 1px solid #eee;
+        }
+        .dropdown-group:last-child {
+            border-bottom: none;
+        }
+        .dropdown-group-label {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #02a046;
+            border-bottom: 1px solid #eee;
+        }
+        .dropdown-option {
+            padding: 10px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+        }
+        .dropdown-option:hover {
+            background-color: #f0f8f4;
+            color: #02a046;
+        }
+        .form-input[readonly] {
+            cursor: pointer;
+            background-color: #fff;
+        }
+        @media (min-width: 1024px) {
+            .products-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 16px;
+            }
+        }
+        @media (min-width: 769px) and (max-width: 1023px) {
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 14px;
+            }
+        }
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            .product-image {
+                margin: 1px;
+                border-radius: 15px;
+            }
+            .product-name {
+                font-size: 18px;
+                height: 32px;
+            }
+            .product-price {
+                font-size: 18px;
+            }
+            .add-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 18px;
+            }
+            .quantity-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 24px;
+            }
+            .quantity-display {
+                font-size: 15px;
+                min-width: 15px;
+            }
+            .cart-modal {
+                padding: 2px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-title">QUÁN CHAY 6 NGON</div>
+        <button class="menu-btn" onclick="openAdminPopup()">☰</button>
+    </div>
+    <div class="category-tabs">
+    <button class="category-tab active" onclick="showCategory('all', this)">Tất cả</button>
+    <button class="category-tab" onclick="showCategory('hot', this)">Món ăn</button>
+    <button class="category-tab" onclick="showCategory('ready', this)">Nước uống</button>
+    <button class="category-tab" onclick="showCategory('special', this)">Hết hàng</button>
+</div>
+    <div class="featured-banner">
+        <div class="featured-title">🥟 Nguyên liệu tươi ngon</div>
+        <div class="featured-subtitle">Được làm từ nguyên liệu tươi, ngon và chất lượng</div>
+    </div>
+    <div class="products-container">
+        <div class="products-grid" id="productsGrid">
+            <div class="product-card" data-category="hot">
+                <div class="product-image hot-label">
+    <img src="https://i.postimg.cc/26g4X7hT/Hu-Tiu-Chay.jpg" 
+         style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;"
+         alt="Món chay" loading="lazy">
+</div>
+                <div class="product-info">
+                    <div class="product-name">Hủ tíu Chay</div>
+                    <div class="product-footer">
+                        <div class="product-price">25.000</div>
+                        <div class="product-controls">
+                            <button class="add-btn" onclick="addToCart('Hủ tíu Chay', 25000, this)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" onclick="decreaseQuantityOnCard('Hủ tíu Chay', this)">-</button>
+                                <span class="quantity-display">1</span>
+                                <button class="quantity-btn increase" onclick="increaseQuantityOnCard('Hủ tíu Chay', 25000, this)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+  
+<div class="product-card" data-category="hot">
+                <div class="product-image hot-label">
+    <img src="https://i.postimg.cc/13Kr5615/Bun-Bo-sua.png" 
+         style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;"
+         alt="Món chay" loading="lazy">
+</div>
+                <div class="product-info">
+                    <div class="product-name">Bún bò Chay</div>
+                    <div class="product-footer">
+                        <div class="product-price">25.000</div>
+                        <div class="product-controls">
+                            <button class="add-btn" onclick="addToCart('Bún bò Chay', 25000, this)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" onclick="decreaseQuantityOnCard('Bún bò Chay', this)">-</button>
+                                <span class="quantity-display">1</span>
+                                <button class="quantity-btn increase" onclick="increaseQuantityOnCard('Bún bò Chay', 25000, this)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<div class="product-card" data-category="hot">
+                <div class="product-image hot-label">
+    <img src="https://i.postimg.cc/YSnNQHS5/Bun-Rieu-Chay.jpg" 
+         style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;"
+         alt="Món chay" loading="lazy">
+</div>
+                <div class="product-info">
+                    <div class="product-name">Bún riêu Chay</div>
+                    <div class="product-footer">
+                        <div class="product-price">25.000</div>
+                        <div class="product-controls">
+                            <button class="add-btn" onclick="addToCart('Bún riêu Chay', 25000, this)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" onclick="decreaseQuantityOnCard('Bún riêu Chay', this)">-</button>
+                                <span class="quantity-display">1</span>
+                                <button class="quantity-btn increase" onclick="increaseQuantityOnCard('Bún riêu Chay', 25000, this)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+	<div class="product-card" data-category="hot">
+                <div class="product-image hot-label">
+    <img src="https://i.postimg.cc/fW5TH5NH/Banh-Canh-Chay.jpg" 
+         style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;"
+         alt="Món chay" loading="lazy">
+</div>
+                <div class="product-info">
+                    <div class="product-name">Banh canh Chay</div>
+                    <div class="product-footer">
+                        <div class="product-price">25.000</div>
+                        <div class="product-controls">
+                            <button class="add-btn" onclick="addToCart('Bánh canh Chay', 25000, this)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" onclick="decreaseQuantityOnCard('Bánh canh Chay', this)">-</button>
+                                <span class="quantity-display">1</span>
+                                <button class="quantity-btn increase" onclick="increaseQuantityOnCard('Bánh canh Chay', 25000, this)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+	<div class="product-card" data-category="hot">
+                <div class="product-image hot-label">
+    <img src="https://i.postimg.cc/JnsNq2DG/buthai.jpg" 
+         style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;"
+         alt="Món chay" loading="lazy">
+</div>
+                <div class="product-info">
+                    <div class="product-name">Bún Thái Chay</div>
+                    <div class="product-footer">
+                        <div class="product-price">25.000</div>
+                        <div class="product-controls">
+                            <button class="add-btn" onclick="addToCart('Bún Thái Chay', 25000, this)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" onclick="decreaseQuantityOnCard('Bún Thái Chay', this)">-</button>
+                                <span class="quantity-display">1</span>
+                                <button class="quantity-btn increase" onclick="increaseQuantityOnCard('Bún Thái Chay', 25000, this)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<div class="product-card" data-category="hot">
+                <div class="product-image hot-label">
+    <img src="https://i.postimg.cc/rpFCdmqG/Bun-Xao-Chay.jpg" 
+         style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;"
+         alt="Món chay" loading="lazy">
+</div>
+                <div class="product-info">
+                    <div class="product-name">Bún xào Chay</div>
+                    <div class="product-footer">
+                        <div class="product-price">25.000</div>
+                        <div class="product-controls">
+                            <button class="add-btn" onclick="addToCart('Bún xào Chay', 25000, this)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" onclick="decreaseQuantityOnCard('Bún xào Chay', this)">-</button>
+                                <span class="quantity-display">1</span>
+                                <button class="quantity-btn increase" onclick="increaseQuantityOnCard('Bún xào Chay', 25000, this)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<div class="product-card" data-category="hot">
+    <div class="product-image hot-label">
+    <img src="https://i.postimg.cc/fR3t7jnb/1.jpg" 
+         style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;"
+         alt="Món chay" loading="lazy">
+</div>
+    <div class="product-info">
+        <div class="product-name">Bún măng Chay</div>
+        <div class="product-footer">
+            <div class="product-price">25.000</div>
+            <div class="product-controls">
+                <button class="add-btn" onclick="addToCart('Bún măng Chay', 25000, this)">+</button>
+                <div class="quantity-controls">
+                    <button class="quantity-btn" onclick="decreaseQuantityOnCard('Bún măng Chay', this)">-</button>
+                    <span class="quantity-display">1</span>
+                    <button class="quantity-btn increase" onclick="increaseQuantityOnCard('Bún măng Chay', 25000, this)">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="hot">
+    <div class="product-image hot-label">
+    <img src="https://i.postimg.cc/fR3t7jnb/1.jpg" 
+         style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;"
+         alt="Món chay" loading="lazy">
+</div>
+    <div class="product-info">
+        <div class="product-name">Hoành thánh Chay</div>
+        <div class="product-footer">
+            <div class="product-price">25.000</div>
+            <div class="product-controls">
+                <button class="add-btn" onclick="addToCart('Hoành thánh Chay', 25000, this)">+</button>
+                <div class="quantity-controls">
+                    <button class="quantity-btn" onclick="decreaseQuantityOnCard('Hoành thánh Chay', this)">-</button>
+                    <span class="quantity-display">1</span>
+                    <button class="quantity-btn increase" onclick="increaseQuantityOnCard('Hoành thánh Chay', 25000, this)">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="hot">
+    <div class="product-image hot-label">
+    <img src="https://i.postimg.cc/fR3t7jnb/1.jpg" 
+         style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;"
+         alt="Món chay" loading="lazy">
+</div>
+    <div class="product-info">
+        <div class="product-name">Bún mắm Chay</div>
+        <div class="product-footer">
+            <div class="product-price">25.000</div>
+            <div class="product-controls">
+                <button class="add-btn" onclick="addToCart('Bún mắm Chay', 25000, this)">+</button>
+                <div class="quantity-controls">
+                    <button class="quantity-btn" onclick="decreaseQuantityOnCard('Bún mắm Chay', this)">-</button>
+                    <span class="quantity-display">1</span>
+                    <button class="quantity-btn increase" onclick="increaseQuantityOnCard('Bún mắm Chay', 25000, this)">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="product-card" data-category="hot">
+   <div class="product-image hot-label">
+    <img src="https://i.postimg.cc/fR3t7jnb/1.jpg" 
+         style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;"
+         alt="Món chay" loading="lazy">
+</div>
+    <div class="product-info">
+        <div class="product-name">Mì Chay</div>
+        <div class="product-footer">
+            <div class="product-price">25.000</div>
+            <div class="product-controls">
+                <button class="add-btn" onclick="addToCart('Mì Chay', 25000, this)">+</button>
+                <div class="quantity-controls">
+                    <button class="quantity-btn" onclick="decreaseQuantityOnCard('Mì Chay', this)">-</button>
+                    <span class="quantity-display">1</span>
+                    <button class="quantity-btn increase" onclick="increaseQuantityOnCard('Mì Chay', 25000, this)">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+            <div class="product-card" data-category="ready">
+                <div class="product-image popular-label">
+    <img src="https://i.postimg.cc/ZYyPvXzQ/NuocSam.jpg" 
+         style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;"
+         alt="Nước sâm" loading="lazy">
+</div>
+                <div class="product-info">
+                    <div class="product-name">Nước sâm</div>
+                    <div class="product-footer">
+                        <div class="product-price">8.000</div>
+                        <div class="product-controls">
+                            <button class="add-btn" onclick="addToCart('Nước sâm', 5000, this)">+</button>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" onclick="decreaseQuantityOnCard('Nước sâm', this)">-</button>
+                                <span class="quantity-display">1</span>
+                                <button class="quantity-btn increase" onclick="increaseQuantityOnCard('Nước sâm', 5000, this)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+		<div class="product-card" data-category="ready">
+    <div class="product-image popular-label">
+    <img src="https://i.postimg.cc/yY4mmnV8/tiato.jpg" 
+         style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;"
+         alt="Nước Tía tô" loading="lazy">
+</div>
+    <div class="product-info">
+        <div class="product-name">Nước Tía tô</div>
+        <div class="product-footer">
+            <div class="product-price">8.000</div>
+            <div class="product-controls">
+                <button class="add-btn" onclick="addToCart('Nước Tía Tô', 5000, this)">+</button>
+                <div class="quantity-controls">
+                    <button class="quantity-btn" onclick="decreaseQuantityOnCard('Nước Tía Tô', this)">-</button>
+                    <span class="quantity-display">1</span>
+                    <button class="quantity-btn increase" onclick="increaseQuantityOnCard('Nước Tía Tô', 5000, this)">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="product-card" data-category="ready">
+    <div class="product-image popular-label">
+    <img src="https://i.postimg.cc/x8HKrNPQ/SuongSa.jpg" 
+         style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;"
+         alt="Sương sa Hạt é" loading="lazy">
+</div>
+    <div class="product-info">
+        <div class="product-name">Sương sa Hạt é</div>
+        <div class="product-footer">
+            <div class="product-price">8.000</div>
+            <div class="product-controls">
+                <button class="add-btn" onclick="addToCart('Sương sa Hạt é', 5000, this)">+</button>
+                <div class="quantity-controls">
+                    <button class="quantity-btn" onclick="decreaseQuantityOnCard('Sương sa Hạt é', this)">-</button>
+                    <span class="quantity-display">1</span>
+                    <button class="quantity-btn increase" onclick="increaseQuantityOnCard('Sương sa Hạt é', 5000, this)">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="product-card" data-category="ready">
+    <div class="product-image popular-label">
+    <img src="https://i.postimg.cc/fR3t7jnb/1.jpg" 
+         style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;"
+         alt="Sương sa Hạt é" loading="lazy">
+</div>
+    <div class="product-info">
+        <div class="product-name">Nước Suối</div>
+        <div class="product-footer">
+            <div class="product-price">8.000</div>
+            <div class="product-controls">
+                <button class="add-btn" onclick="addToCart('Nước Suối', 5000, this)">+</button>
+                <div class="quantity-controls">
+                    <button class="quantity-btn" onclick="decreaseQuantityOnCard('Nước Suối', this)">-</button>
+                    <span class="quantity-display">1</span>
+                    <button class="quantity-btn increase" onclick="increaseQuantityOnCard('Nước Suối', 5000, this)">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+    <div class="cart-summary" id="cartSummary">
+        <div class="cart-summary-left">
+            <div class="cart-items-count" id="cartItemsCount">2 món</div>
+            <div class="cart-total-price" id="cartTotalPrice">150.000</div>
+        </div>
+        <button class="view-cart-btn" onclick="showCart()">Xem món đã chọn</button>
+    </div>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div>Đang xử lý đơn hàng...</div>
+        </div>
+    </div>
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-modal-content">
+            <div class="cart-modal-header">
+                <div class="cart-modal-title">THÔNG TIN ĐƠN HÀNG</div>
+            </div>
+            <div class="cart-modal-body" id="cartModalBody">
+            </div>
+            <div class="cart-modal-footer">
+                <div class="cart-total">
+                    <span>Tổng cộng:</span>
+                    <span id="modalTotalPrice">0 </span>
+                </div>
+                <div class="order-buttons" id="orderButtons">
+    <button class="back-to-menu-btn" onclick="backToMenu()">← Đặt thêm món khác</button>
+    <button class="order-btn" id="onlineOrderBtn" onclick="showOrderForm()">Tiến hàng đặt món</button>
+</div>
+                <div class="order-form" id="orderForm">
+                    <form onsubmit="submitOrder(event)" id="orderFormElement">
+                        <div class="form-group">
+                            
+                            <input type="text" class="form-input" id="customerName" name="customerName" required minlength="3" placeholder="Tên khách hàng (tối thiểu 3 ký tự)">
+                            <div class="error-message" id="nameError">Tên khách hàng phải có ít nhất 3 ký tự</div>
+                        </div>
+                        <div class="form-group">
+                            
+                            <input type="tel" class="form-input" id="customerPhone" name="customerPhone" required pattern="^(0[35789])[0-9]{8}$" placeholder="Nhập số điện thoại (vd: 0909000999)">
+                            <div class="error-message" id="phoneError">Vui lòng nhập đúng định dạng số di động Việt Nam</div>
+                        </div>
+                        <div class="form-group">
+                            
+                            <input type="text" class="form-input" id="city" name="city" value="Tp.Hồ Chí Minh" readonly>
+                        </div>
+                        <div class="form-group">
+    <div class="custom-select-wrapper">
+        <input type="text" class="form-input" id="ward" name="ward" required readonly placeholder="Chọn Phường/Xã" onclick="toggleWardDropdown()">
+        <div class="custom-dropdown" id="wardDropdown">
+            <div class="dropdown-group">
+                <div class="dropdown-group-label">Huyện Hóc Môn</div>
+                <div class="dropdown-option" onclick="selectWard('Xã Đông Thạnh')">Xã Đông Thạnh</div>
+                <div class="dropdown-option" onclick="selectWard('Xã Hóc Môn')">Xã Hóc Môn (Xã Trung Chánh, TT Hóc Môn, Xã Tân Hiệp)</div>
+                <div class="dropdown-option" onclick="selectWard('Xã Xuân Thới Sơn')">Xã Xuân Thới Sơn</div>
+                <div class="dropdown-option" onclick="selectWard('Xã Bà Điểm')">Xã Bà Điểm</div>
+            </div>
+            <div class="dropdown-group">
+                <div class="dropdown-group-label">Quận 12</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Đông Hưng Thuận')">Phường Đông Hưng Thuận</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Trung Mỹ Tây')">Phường Trung Mỹ Tây</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Tân Thới Hiệp')">Phường Tân Thới Hiệp</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Thới An')">Phường Thới An</div>
+                <div class="dropdown-option" onclick="selectWard('Phường An Phú Đông')">Phường An Phú Đông</div>
+            </div>
+            <div class="dropdown-group">
+                <div class="dropdown-group-label">Quận Gò Vấp</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Hạnh Thông')">Phường Hạnh Thông</div>
+                <div class="dropdown-option" onclick="selectWard('Phường An Nhơn')">Phường An Nhơn</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Gò Vấp')">Phường Gò Vấp (Phường 10, Phường 17)</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Thống Tây Hội')">Phường Thống Tây Hội</div>
+                <div class="dropdown-option" onclick="selectWard('Phường An Hội Tây')">Phường An Hội Tây</div>
+                <div class="dropdown-option" onclick="selectWard('Phường An Hội Đông')">Phường An Hội Đông</div>
+            </div>
+            <div class="dropdown-group">
+                <div class="dropdown-group-label">Quận Tân Bình</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Tân Sơn Hòa')">Phường Tân Sơn Hòa</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Tân Sơn Nhất')">Phường Tân Sơn Nhất</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Tân Hòa')">Phường Tân Hòa</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Bảy Hiền')">Phường Bảy Hiền</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Tân Bình')">Phường Tân Bình</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Tân Sơn')">Phường Tân Sơn</div>
+            </div>
+            <div class="dropdown-group">
+                <div class="dropdown-group-label">Quận Tân Phú</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Tây Thạnh')">Phường Tây Thạnh</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Tân Sơn Nhì')">Phường Tân Sơn Nhì</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Phú Thọ Hòa')">Phường Phú Thọ Hòa</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Phú Thạnh')">Phường Phú Thạnh</div>
+                <div class="dropdown-option" onclick="selectWard('Phường Tân Phú')">Phường Tân Phú</div>
+            </div>
+            <div class="dropdown-group">
+                <div class="dropdown-group-label">Huyện Củ Chi</div>
+                <div class="dropdown-option" onclick="selectWard('Xã An Nhơn Tây')">Xã An Nhơn Tây</div>
+                <div class="dropdown-option" onclick="selectWard('Xã Thái Mỹ')">Xã Thái Mỹ</div>
+                <div class="dropdown-option" onclick="selectWard('Xã Nhuận Đức')">Xã Nhuận Đức</div>
+                <div class="dropdown-option" onclick="selectWard('Xã Tân An Hội')">Xã Tân An Hội</div>
+                <div class="dropdown-option" onclick="selectWard('Xã Củ Chi')">Xã Củ Chi</div>
+                <div class="dropdown-option" onclick="selectWard('Xã Phú Hòa Đông')">Xã Phú Hòa Đông</div>
+                <div class="dropdown-option" onclick="selectWard('Xã Bình Mỹ')">Xã Bình Mỹ</div>
+            </div>
+        </div>
+    </div>
+</div>
+						
+                        <div class="form-group">
+                            <label class="form-label" for="address">Số nhà, Tên đường, Ấp/Khu phố </label>
+                            <div class="address-input-group">
+                                <input type="text" class="form-input" id="address" name="address" placeholder="Số nhà, tên đường..." required>
+                                <span class="map-icon" onclick="openMap()">📍</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            
+                            <textarea class="form-textarea" id="note" name="note" placeholder="Ghi chú thêm (nếu có)..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Gửi thông tin Đặt món</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+	
+	<!-- ===== THÊM PHẦN NÀY TRƯỚC <div class="custom-alert" id="customAlert"> ===== -->
+	
+<!-- Admin Popup -->
+<div class="admin-popup" id="adminPopup" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+    <div class="admin-popup-content">
+        <div class="admin-header">
+            <h2 id="adminTitle">Quản trị cửa hàng</h2>
+            <button onclick="closeAdminPopup()" aria-label="Đóng">✖</button>
+        </div>
+        <div class="admin-body">
+            <div id="adminAlerts" class="admin-alert info">Nhập mật khẩu quản trị để mở khóa quản lý menu.</div>
+            <div class="row admin-login">
+                <div>
+                    <label>Mật khẩu quản trị</label>
+                    <div class="password-input-container">
+                        <input type="password" id="adminPass" placeholder="Nhập mật khẩu quản trị" />
+                        <div class="password-spinner"></div>
+                    </div>
+                </div>
+                <div class="stack" style="margin-top: 10px;">
+                    <button class="btn ghost" style="background: #f0f0f0; color: #333; border: none; border-radius: 10px; padding: 8px 12px; cursor: pointer;" onclick="changePassword()">Đổi mật khẩu</button>
+                </div>
+            </div>
+            <hr style="border: none; border-top: 1px solid #eee; margin: 12px 0;">
+            <div id="menuManager" class="menu-manager disabled">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 6px 0;">
+                    <h3 style="margin: 0;">Quản lý Menu</h3>
+                    <button class="btn ghost" style="background: #f0f0f0; color: #333; border: none; border-radius: 10px; padding: 8px 12px; cursor: pointer;" onclick="fetchAdminMenu()">Tải lại menu</button>
+                </div>
+                <input type="search" id="menuSearch" placeholder="Tìm món..." style="width: 100%; padding: 8px 10px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; margin: 8px 0;" oninput="renderAdminMenuList()" />
+                <div id="loadAlert" class="admin-alert"></div>
+                <div id="adminMenuList">Hãy đăng nhập để tải menu...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="custom-alert" id="customAlert">
+    <div class="custom-alert-content">
+        <div class="custom-alert-header" id="alertTitle"></div>
+        <div class="custom-alert-body" id="alertMessage"></div>
+        <div class="custom-alert-footer">
+            <button class="custom-alert-btn btn-secondary" onclick="closeCustomAlert()">Đóng và chờ Xác nhận</button>
+            <button class="custom-alert-btn btn-primary" onclick="confirmZaloOrder()">Kết bạn Zalo với Quán</button>
+        </div>
+    </div>
+</div>
+    
+    
+</div>
+
+
+    <script>
+        // Thay YOUR_SCRIPT_URL bằng URL thực tế của Google Apps Script
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxMT0qQMyX-fbS46uD_IGjne6uBXnJduU5YlsFHZ5_cmSWSJefHUQOQVz6M1srRvIwA/exec';
+        // URL Google Apps Script cho menu (thay bằng URL thực tế của bạn)
+const MENU_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwWxE4-rraRyQssxtkB8vxqakB1JH_TZBY-U4D48bHXIMXkcSphnJZq9wdNqXMFiTUqQg/exec';
+// Thêm đoạn code này ngay sau dòng MENU_SCRIPT_URL
+const PRODUCT_IMAGES = {
+    'Hủ tíu Chay': 'https://i.postimg.cc/26g4X7hT/Hu-Tiu-Chay.jpg',
+    'Bún bò Chay': 'https://i.postimg.cc/13Kr5615/Bun-Bo-sua.png', 
+    'Bún riêu Chay': 'https://i.postimg.cc/YSnNQHS5/Bun-Rieu-Chay.jpg',
+    'Bánh canh Chay': 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=300',
+    'Bánh canh Chay': 'https://i.postimg.cc/fW5TH5NH/Banh-Canh-Chay.jpg',
+    'Bún Thái Chay': 'https://i.postimg.cc/JnsNq2DG/buthai.jpg',
+    'Bún xào Chay': 'https://i.postimg.cc/rpFCdmqG/Bun-Xao-Chay.jpg',
+    'Bún măng Chay': 'https://i.postimg.cc/fR3t7jnb/1.jpg',
+    'Hoành thánh Chay': 'https://i.postimg.cc/fR3t7jnb/1.jpg',
+    'Bún mắm Chay': 'https://i.postimg.cc/fR3t7jnb/1.jpg',
+    'Mì Chay': 'https://i.postimg.cc/fR3t7jnb/1.jpg',
+    'Nước Sâm': 'https://i.postimg.cc/ZYyPvXzQ/NuocSam.jpg',
+    'Nước Tía Tô': 'https://i.postimg.cc/yY4mmnV8/tiato.jpg', 
+    'Sương Sa Hạt É': 'https://i.postimg.cc/x8HKrNPQ/SuongSa.jpg',
+    'Nước Suối': 'https://i.postimg.cc/fR3t7jnb/1.jpg'  // Thêm món mới
+};
+let menuData = [];
+        let cartCount = 0;
+        let cartItems = [];
+        let cartTotal = 0;
+        // Validation functions
+        function validateName() {
+            const nameInput = document.getElementById('customerName');
+            const nameError = document.getElementById('nameError');
+            const name = nameInput.value.trim();
+            if (name.length < 3) {
+                nameInput.classList.add('error');
+                nameError.style.display = 'block';
+                return false;
+            } else {
+                nameInput.classList.remove('error');
+                nameError.style.display = 'none';
+                return true;
+            }
+        }
+        function validatePhone() {
+            const phoneInput = document.getElementById('customerPhone');
+            const phoneError = document.getElementById('phoneError');
+            const phone = phoneInput.value.trim();
+            // Vietnamese mobile phone number patterns
+            const vnMobilePattern = /^(0[35789])[0-9]{8}$/;
+            if (!vnMobilePattern.test(phone)) {
+                phoneInput.classList.add('error');
+                phoneError.style.display = 'block';
+                return false;
+            } else {
+                phoneInput.classList.remove('error');
+                phoneError.style.display = 'none';
+                return true;
+            }
+        }
+        // Add event listeners for real-time validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameInput = document.getElementById('customerName');
+            const phoneInput = document.getElementById('customerPhone');
+            if (nameInput) {
+                nameInput.addEventListener('input', validateName);
+                nameInput.addEventListener('blur', validateName);
+            }
+            if (phoneInput) {
+                phoneInput.addEventListener('input', validatePhone);
+                phoneInput.addEventListener('blur', validatePhone);
+            }
+        });
+   function showCategory(category, button) {
+    // Xóa active từ tất cả tabs
+    document.querySelectorAll('.category-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    // Thêm active cho tab được click
+    button.classList.add('active');
+    // Lọc sản phẩm
+    document.querySelectorAll('.product-card').forEach(card => {
+        const cardCategory = card.getAttribute('data-category');
+        const cardStatus = card.getAttribute('data-status');
+        if (category === 'all') {
+            // Hiển thị tất cả sản phẩm
+            card.style.display = 'block';
+        }
+        else if (category === 'special') {
+            // Chỉ hiển thị sản phẩm hết hàng
+            if (cardStatus === 'Hết hàng') {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        }
+        else if (category === 'hot') {
+            // Hiển thị tất cả sản phẩm thuộc danh mục món ăn (bao gồm cả hết hàng)
+            if (cardCategory === 'Món ăn') {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        }
+        else if (category === 'ready') {
+            // Hiển thị tất cả sản phẩm thuộc danh mục nước uống (bao gồm cả hết hàng)
+            if (cardCategory === 'Nước uống') {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        }
+        else {
+            // Hiển thị theo category cụ thể VÀ KHÔNG bị hết hàng
+            if (cardCategory === category && cardStatus !== 'Hết hàng') {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        }
+    });
+}
+        function addToCart(productName, price, button) {
+            const productControls = button.parentElement;
+            const addBtn = productControls.querySelector('.add-btn');
+            const quantityControls = productControls.querySelector('.quantity-controls');
+            const quantityDisplay = quantityControls.querySelector('.quantity-display');
+            let existingItem = cartItems.find(item => item.name === productName);
+            if (existingItem) {
+                existingItem.quantity += 1;
+                quantityDisplay.textContent = existingItem.quantity;
+            } else {
+                cartItems.push({
+                    name: productName,
+                    price: price,
+                    quantity: 1
+                });
+                quantityDisplay.textContent = '1';
+            }
+            cartCount++;
+            cartTotal += price;
+            addBtn.style.display = 'none';
+            quantityControls.classList.add('show');
+            updateCartDisplay();
+        }
+        function increaseQuantityOnCard(productName, price, button) {
+            const quantityDisplay = button.parentElement.querySelector('.quantity-display');
+            let existingItem = cartItems.find(item => item.name === productName);
+            if (existingItem) {
+                existingItem.quantity++;
+                quantityDisplay.textContent = existingItem.quantity;
+                cartCount++;
+                cartTotal += price;
+                updateCartDisplay();
+            }
+        }
+        function decreaseQuantityOnCard(productName, button) {
+            const productControls = button.parentElement.parentElement;
+            const addBtn = productControls.querySelector('.add-btn');
+            const quantityControls = productControls.querySelector('.quantity-controls');
+            const quantityDisplay = quantityControls.querySelector('.quantity-display');
+            let existingItem = cartItems.find(item => item.name === productName);
+            if (existingItem) {
+                existingItem.quantity--;
+                cartCount--;
+                cartTotal -= existingItem.price;
+                if (existingItem.quantity <= 0) {
+                    cartItems = cartItems.filter(item => item.name !== productName);
+                    addBtn.style.display = 'flex';
+                    quantityControls.classList.remove('show');
+                } else {
+                    quantityDisplay.textContent = existingItem.quantity;
+                }
+                updateCartDisplay();
+            }
+        }
+        function updateCartDisplay() {
+            document.getElementById('cartBadge').textContent = cartCount;
+            if (cartCount > 0) {
+                document.getElementById('cartSummary').classList.add('show');
+                document.getElementById('cartItemsCount').textContent = cartCount + ' món';
+                document.getElementById('cartTotalPrice').textContent = cartTotal.toLocaleString('vi-VN') ;
+            } else {
+                document.getElementById('cartSummary').classList.remove('show');
+            }
+        }
+        function showCart() {
+    if (cartItems.length === 0) {
+        alert('Giỏ hàng trống!');
+        return;
+    }
+    document.getElementById('orderForm').classList.remove('show');
+    document.getElementById('onlineOrderBtn').style.display = 'block';
+    updateCartModal();
+    document.getElementById('cartModal').classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+        function closeCart() {
+    document.getElementById('cartModal').classList.remove('show');
+    document.getElementById('orderForm').classList.remove('show');
+    document.getElementById('onlineOrderBtn').style.display = 'block';
+    document.body.style.overflow = 'auto';
+}
+        function backToMenu() {
+            closeCart();
+        }
+      function updateCartModal() {
+    const modalBody = document.getElementById('cartModalBody');
+    const modalTotalPrice = document.getElementById('modalTotalPrice');
+    if (cartItems.length === 0) {
+        modalBody.innerHTML = '<div class="empty-cart">Giỏ hàng trống</div>';
+        modalTotalPrice.textContent = '0 ';
+        return;
+    }
+    let modalHTML = '';
+    cartItems.forEach((item, index) => {
+        const itemTotal = item.price * item.quantity;
+        modalHTML += `
+    <div class="cart-item">
+        <div class="cart-item-left">
+            <div class="cart-item-image">
+                <img src="${PRODUCT_IMAGES[item.name] || 'https://via.placeholder.com/50x50/02a046/ffffff?text=🥟'}" 
+                     alt="${item.name}"
+                     style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;"
+                     onerror="this.outerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:24px;\\'>🥟</div>'">
+            </div>
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">${item.price.toLocaleString('vi-VN')} </div>
+                    </div>
+                </div>
+                <div class="cart-item-amount">${itemTotal.toLocaleString('vi-VN')} </div>
+                <div class="cart-item-controls">
+                    <button class="modal-quantity-btn" onclick="decreaseQuantityInModal(${index})">-</button>
+                    <span class="modal-quantity-display">${item.quantity}</span>
+                    <button class="modal-quantity-btn increase" onclick="increaseQuantityInModal(${index})">+</button>
+                </div>
+            </div>
+        `;
+    });
+            modalBody.innerHTML = modalHTML;
+            modalTotalPrice.textContent = cartTotal.toLocaleString('vi-VN') ;
+        }
+        function increaseQuantityInModal(index) {
+            cartItems[index].quantity++;
+            cartCount++;
+            cartTotal += cartItems[index].price;
+            updateCartDisplay();
+            updateCartModal();
+            updateProductCardQuantity(cartItems[index].name, cartItems[index].quantity);
+        }
+        function decreaseQuantityInModal(index) {
+            const item = cartItems[index];
+            item.quantity--;
+            cartCount--;
+            cartTotal -= item.price;
+            if (item.quantity <= 0) {
+                cartItems.splice(index, 1);
+                resetProductCard(item.name);
+                if (cartItems.length === 0) {
+                    closeCart();
+                    return;
+                }
+            } else {
+                updateProductCardQuantity(item.name, item.quantity);
+            }
+            updateCartDisplay();
+            updateCartModal();
+        }
+        function updateProductCardQuantity(productName, quantity) {
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                const nameElement = card.querySelector('.product-name');
+                if (nameElement.textContent === productName) {
+                    const quantityDisplay = card.querySelector('.quantity-display');
+                    if (quantityDisplay) {
+                        quantityDisplay.textContent = quantity;
+                    }
+                }
+            });
+        }
+        function resetProductCard(productName) {
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                const nameElement = card.querySelector('.product-name');
+                if (nameElement.textContent === productName) {
+                    const addBtn = card.querySelector('.add-btn');
+                    const quantityControls = card.querySelector('.quantity-controls');
+                    addBtn.style.display = 'flex';
+                    quantityControls.classList.remove('show');
+                }
+            });
+        }
+        function showOrderForm() {
+    document.getElementById('orderForm').classList.add('show');
+    document.getElementById('onlineOrderBtn').style.display = 'none';
+}
+        function orderViaZalo() {
+            if (cartItems.length === 0) {
+                alert('Giỏ hàng trống!');
+                return;
+            }
+            document.getElementById('onlineOrderBtn').style.display = 'none';
+            let zaloMessage = `🛒 MÓN ĂN ĐÃ ĐẶT\n\n`;
+            zaloMessage += `👤 Quý Khách hàng: [Nhập tên của bạn]\n`;
+            zaloMessage += `📞 Số điện thoại: [Nhập số điện thoại]\n`;
+            zaloMessage += `📍 Địa chỉ nhận hàng: [Địa chỉ chi tiết], [Phường/Xã], Tp.Hồ Chí Minh\n\n`;
+            zaloMessage += `📋 CHI TIẾT CÁC MÓN:\n`;
+            cartItems.forEach((item, index) => {
+                zaloMessage += `Món ${index + 1} - ${item.name} - SL: ${item.quantity} - Đơn giá: ${item.price.toLocaleString('vi-VN')}  - Thành tiền: ${(item.price * item.quantity).toLocaleString('vi-VN')} \n`;
+            });
+            zaloMessage += `\n💰 TỔNG CỘNG: ${cartTotal.toLocaleString('vi-VN')} \n\n`;
+            zaloMessage += `Vui lòng xác nhận đơn hàng giúp tôi. Cảm ơn!`;
+            const zaloUrl = `https://zalo.me/0909112233?text=${encodeURIComponent(zaloMessage)}`;
+            window.open(zaloUrl, '_blank');   // mở Zalo ở tab/app mới
+ // đóng popup để về màn chính
+        }
+        function openMap() {
+            alert('Tính năng ghim vị trí trên bản đồ sẽ được cập nhật sau!');
+        }
+        async function submitOrder(event) {
+            event.preventDefault();
+            if (cartItems.length === 0) {
+                alert('Giỏ hàng trống!');
+                return;
+            }
+            // Validate form
+            const isNameValid = validateName();
+            const isPhoneValid = validatePhone();
+            if (!isNameValid || !isPhoneValid) {
+                alert('Vui lòng kiểm tra lại thông tin đã nhập!');
+                return;
+            }
+           const formData = new FormData(event.target);
+const customerName = formData.get('customerName');
+const customerPhone = formData.get('customerPhone');
+const ward = formData.get('ward');
+const address = formData.get('address');
+const note = formData.get('note');
+const fullAddress = `${address}, ${ward}, Tp.HCM`;
+// XÓA dòng này:
+// const fullAddress = `${address}, ${ward}, Tp.HCM`;
+const orderData = {
+    customerName: customerName,
+    customerPhone: customerPhone,
+    address: address,        // Giữ nguyên address riêng
+    ward: ward,             // Giữ nguyên ward riêng
+    note: note,
+    items: cartItems,
+    total: cartTotal,
+    timestamp: new Date().toISOString()
+};
+// Tạo chi tiết đơn hàng để hiển thị
+let orderDetails = `📋 ĐƠN HÀNG ĐANG ĐẶT\n\n`;
+orderDetails += `👤 Quý khách hàng: ${customerName}\n`;
+orderDetails += `📞 Số điện thoại: ${customerPhone}\n`;
+orderDetails += `📍 Địa chỉ: ${address}, ${ward}, Tp.HCM\n`;
+orderDetails += `🕘 Thời gian đặt: ${new Date().toLocaleString('vi-VN')}\n`;
+if (note) {
+    orderDetails += `📝 Ghi chú: ${note}\n`;
+}
+orderDetails += `\n📋 Chi tiết các món:\n`;
+orderDetails += `------------------------------------------------------------------\n`;
+cartItems.forEach((item, index) => {
+    const itemTotal = item.price * item.quantity;
+    orderDetails += `${index + 1}. ${item.name}: ${item.quantity} x ${item.price.toLocaleString('vi-VN')}đ = ${itemTotal.toLocaleString('vi-VN')}đ\n`;
+});
+orderDetails += `------------------------------------------------------------------\n`;
+orderDetails += `\n💰 TỔNG SỐ TIỀN: <span style="color: #02a046; font-weight: bold;">${cartTotal.toLocaleString('vi-VN')}</span>\n`;
+orderDetails += `🚚 Thời gian giao: 10-20 phút (tùy khu vực)\n\n`;
+orderDetails += `📞 Chúng tôi sẽ liên hệ xác nhận trong ít phút!\n`;
+orderDetails += `Quý khách vui lòng để ý điện thoại. Cảm ơn !`;
+// Hiển thị popup ngay lập tức
+showCustomAlert('ĐẶT HÀNG THÀNH CÔNG !', orderDetails);
+// Ghi dữ liệu ngầm (không chờ kết quả)
+fetch(GOOGLE_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(orderData)
+}).catch(error => {
+    console.error('Lỗi gửi đơn hàng ngầm:', error);
+});
+        }
+	async function loadMenuFromSheets() {
+            try {
+                const response = await fetch(MENU_SCRIPT_URL + '?action=getMenu');
+                if (!response.ok) throw new Error('Network response was not ok');
+                menuData = await response.json();
+                generateMenuHTML();
+                showCategory('all', document.querySelector('.category-tab.active'));
+            } catch (error) {
+                console.error('Lỗi load menu:', error);
+                // Nếu lỗi, dùng menu cũ (fallback)
+                console.log('Sử dụng menu mặc định');
+            }
+        }
+        // BƯỚC 1: Sửa hàm generateMenuHTML()
+// Thay thế hàm cũ bằng hàm mới này:
+function generateMenuHTML() {
+    const productsGrid = document.getElementById('productsGrid');
+    if (!menuData || menuData.length === 0) return;
+    
+    let html = '';
+    menuData.forEach(item => {
+        const labelClass = getLabelClass(item.category);
+        const isOutOfStock = item.status === 'Hết hàng';
+        const disabledClass = isOutOfStock ? ' disabled' : '';
+        
+        // Ưu tiên: 1) Link từ PRODUCT_IMAGES, 2) Link từ Sheets, 3) Emoji mặc định
+        const productImage = PRODUCT_IMAGES[item.name] || item.image || null;
+        
+        let imageContent;
+        if (productImage && productImage.trim()) {
+            imageContent = `
+                <img src="${productImage}" 
+                     alt="${item.name}"
+                     style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;"
+                     loading="lazy"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-fallback" style="display:none; width:100%; height:100%; align-items:center; justify-content:center;">
+    <img src="https://i.postimg.cc/26g4X7hT/Hu-Tiu-Chay.jpg" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" alt="Placeholder">
+</div>
+            `;
+        } else {
+            imageContent = '<img src="https://i.postimg.cc/26g4X7hT/Hu-Tiu-Chay.jpg" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" alt="Loading...">';
+        }
+        
+        html += `
+            <div class="product-card${disabledClass}" data-category="${item.category}" data-status="${item.status}">
+                <div class="product-image ${labelClass}">${imageContent}</div>
+                <div class="product-info">
+                    <div class="product-name">${item.name}</div>
+                    <div class="product-footer">
+                        <div class="product-price">${parseInt(item.price).toLocaleString('vi-VN')}</div>
+                        <div class="product-controls">
+                            ${isOutOfStock ?
+                                '<button class="add-btn disabled" disabled>Hết hàng</button>' :
+                                `<button class="add-btn" onclick="addToCart('${item.name}', ${item.price}, this)">+</button>`
+                            }
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" onclick="decreaseQuantityOnCard('${item.name}', this)">-</button>
+                                <span class="quantity-display">1</span>
+                                <button class="quantity-btn increase" onclick="increaseQuantityOnCard('${item.name}', ${item.price}, this)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    productsGrid.innerHTML = html;
+}
+// BƯỚC 2: Cập nhật hàm getLabelClass()
+// Thay thế hàm cũ bằng hàm mới này:
+function getLabelClass(category) {
+    switch(category) {
+        case 'hot': return 'hot-label';
+        case 'ready': return 'popular-label';
+        case 'special': return 'special-label';
+        default: return 'hot-label';
+    }
+}
+// BƯỚC 3: Thêm CSS cho sản phẩm hết hàng
+// Thêm đoạn CSS này vào phần <style> trong file HTML:
+/*
+.product-card.disabled {
+    opacity: 0.6;
+    position: relative;
+}
+.product-card.disabled::after {
+    content: 'HẾT HÀNG';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(220, 53, 69, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    z-index: 10;
+}
+.add-btn.disabled {
+    background: #dc3545;
+    cursor: not-allowed;
+    font-size: 12px;
+    width: auto;
+    padding: 4px 8px;
+}
+.add-btn.disabled:hover {
+    background: #dc3545;
+    transform: none;
+}
+*/
+       function getLabelClass(category) {
+    switch(category) {
+        case 'hot': return 'hot-label';
+        case 'ready': return 'popular-label';
+        case 'special': return 'special-label';
+        default: return '';  // Không có label nếu không khớp category
+    }
+}
+        function resetCart() {
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                const addBtn = card.querySelector('.add-btn');
+                const quantityControls = card.querySelector('.quantity-controls');
+                addBtn.style.display = 'flex';
+                quantityControls.classList.remove('show');
+            });
+            cartItems = [];
+            cartCount = 0;
+            cartTotal = 0;
+            updateCartDisplay();
+            closeCart();
+        }
+        // Close modal when clicking outside
+        document.getElementById('cartModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCart();
+            }
+        });
+        // Initialize - show all products by default
+        document.addEventListener('DOMContentLoaded', function() {
+    loadMenuFromSheets(); // Thêm dòng này
+    showCategory('all', document.querySelector('.category-tab.active'));
+});
+        document.addEventListener('DOMContentLoaded', function () {
+    const nameInput = document.getElementById('customerName');
+    if (nameInput) {
+        nameInput.addEventListener('input', function () {
+            this.value = this.value.toUpperCase();
+        });
+    }
+});
+  // --- Định dạng địa chỉ (blur) ---
+  const commonWords = ["tran","van","le","nguyen","thi","hoa","binh","phuc","tinh","chinh","minh"];
+  function toTitleCase(str) {
+    return str.replace(/\w\S*/g, txt =>
+      txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+    );
+  }
+ function smartFormatAddress(input) {
+  if (!input.trim()) return "";
+  let text = input.trim().replace(/\s+/g, " ").toLowerCase();
+  // Viết hoa chữ cái đầu mỗi từ (bao gồm cả ký tự có dấu)
+  return text.replace(/(^|\s)(.)/g, function(match, space, char) {
+    return space + char.toUpperCase();
+  });
+}
+  const inputEl = document.getElementById("address");
+  inputEl.addEventListener("blur", () => {
+    const formatted = smartFormatAddress(inputEl.value);
+    if (formatted) inputEl.value = formatted; // ghi trực tiếp vào ô nhập
+  });
+  
+  // Khai báo biến global trước
+let currentOrderDetails = '';
+let adminMenuData = [];
+let passwordCheckTimeout = null;
+const ADMIN_CONFIG = {
+    MENU_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzIlA3lho8TgEeKeiZWLJPsc1kkmyRxSgNoNQTTQD-S8wyRJEffBp8X0PnM66I5f85UwA/exec",
+    ADMIN_PASS: "0000",
+    FETCH_TIMEOUT_MS: 30000
+};
+
+function showCustomAlert(title, message) {
+    currentOrderDetails = message;
+    document.getElementById('alertTitle').textContent = title;
+    document.getElementById('alertMessage').innerHTML = message;
+    document.getElementById('customAlert').classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+function closeCustomAlert() {
+    document.getElementById('customAlert').classList.remove('show');
+    document.body.style.overflow = 'auto';
+    resetCart();
+}
+function confirmZaloOrder() {
+    const autoZaloMessage = `🛒 ĐƠN HÀNG MỚI TỪ WEBSITE\n\n${currentOrderDetails}`;
+    const zaloUrl = `https://zalo.me/0909112233?text=${encodeURIComponent(autoZaloMessage)}`;
+    window.location.href = zaloUrl;
+// Không đóng popup ngay, để user có thể quay lại
+// closeCustomAlert(); // Bỏ dòng này
+}
+
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+});
+
+function addToHomeScreen() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('Người dùng đã thêm vào màn hình chính');
+            } else {
+                console.log('Người dùng từ chối thêm vào màn hình chính');
+            }
+            deferredPrompt = null;
+        });
+    } else {
+        alert("Vui lòng dùng trình duyệt hỗ trợ (Chrome, Edge, Safari...) để lưu vào màn hình chính.");
+    }
+}
+        
+// Thay thế function showShopInfoPopup() bằng phiên bản tối ưu này:
+
+// Function hiển thị thông tin quán
+function showShopInfoPopup() {
+    const infoHTML = `
+        <div class="shop-info-item"><strong>1. Giờ hoạt động:</strong> 06:00 - 13:30 và 16:00 - 20:30</div>
+        <div class="shop-info-item"><strong>2. Địa chỉ:</strong> 126/0 Lê Lợi, Xã Hóc Môn, Tp.HCM</div>
+        <div class="shop-info-item"><strong>3. Link vị trí:</strong> <a href="https://maps.google.com/?q=126/0+Lê+Lợi,+Hóc+Môn" target="_blank">Xem trên Google Maps</a></div>
+        <div class="shop-info-item"><strong>4. Số điện thoại:</strong> <a href="tel:0909112233">0909 112 233</a></div>
+        <div class="shop-info-item"><strong>5. Số Zalo/mã QR:</strong> <a href="https://zalo.me/0909112233" target="_blank">Kết bạn qua Zalo</a></div>
+    `;
+
+    // Thêm class 'shop-info' để control tốt hơn
+    const popup = document.getElementById('customAlert');
+    popup.classList.add('shop-info');
+    
+    // Ẩn nút "Gửi Zalo" cho popup thông tin quán
+    const zaloBtn = popup.querySelector('.btn-primary');
+    const closeBtn = popup.querySelector('.btn-secondary');
+    if (zaloBtn) zaloBtn.style.display = 'none';
+    if (closeBtn) closeBtn.textContent = 'Đóng';
+    
+    showCustomAlert("THÔNG TIN VỀ QUÁN CHAY", infoHTML);
+}
+
+// Cập nhật function closeCustomAlert để xử lý class mới
+function closeCustomAlert() {
+    const popup = document.getElementById('customAlert');
+    popup.classList.remove('show');
+    popup.classList.remove('half');
+    popup.classList.remove('shop-info');
+    document.body.style.overflow = 'auto';
+    
+    // Reset hiển thị các nút
+    const zaloBtn = popup.querySelector('.btn-primary');
+    const closeBtn = popup.querySelector('.btn-secondary');
+    if (zaloBtn) zaloBtn.style.display = 'flex';
+    if (closeBtn) closeBtn.textContent = 'Đóng';
+    
+    // Chỉ reset cart nếu đây là popup đặt hàng thành công
+    if (currentOrderDetails) {
+        resetCart();
+        currentOrderDetails = '';
+    }
+}
+
+// Function mở Zalo từ navigation (nếu chưa có)
+function openZaloFromNav() {
+    const zaloUrl = 'https://zalo.me/0909112233';
+    window.open(zaloUrl, '_blank');
+}
+
+// ===== ADMIN FUNCTIONS =====
+function openAdminPopup() {
+    document.getElementById('adminPopup').style.display = 'flex';
+    document.getElementById('adminPass').focus();
+}
+
+function closeAdminPopup() {
+    document.getElementById('adminPopup').style.display = 'none';
+    resetAdminState();
+}
+
+function resetAdminState() {
+    document.getElementById('adminPass').value = '';
+    document.getElementById('menuManager').classList.add('disabled');
+    document.getElementById('menuSearch').value = '';
+    document.getElementById('adminMenuList').innerHTML = 'Hãy đăng nhập để tải menu...';
+    
+    const alertEl = document.getElementById('adminAlerts');
+    showAdminAlert(alertEl, 'info', 'Nhập mật khẩu quản trị để mở khóa quản lý menu.');
+    
+    const loadAlert = document.getElementById('loadAlert');
+    loadAlert.classList.remove('show');
+    
+    document.querySelector('.password-input-container').classList.remove('checking');
+    
+    if (passwordCheckTimeout) {
+        clearTimeout(passwordCheckTimeout);
+        passwordCheckTimeout = null;
+    }
+    
+    adminMenuData = [];
+}
+
+function showAdminAlert(el, type, msg) {
+    el.className = `admin-alert ${type} show`;
+    el.textContent = msg;
+}
+
+function checkAdminPass() {
+    const pass = document.getElementById('adminPass').value.trim();
+    const alertEl = document.getElementById('adminAlerts');
+    
+    if (pass === ADMIN_CONFIG.ADMIN_PASS) {
+        document.getElementById('menuManager').classList.remove('disabled');
+        showAdminAlert(alertEl, 'success', 'Đăng nhập thành công! Bạn có thể quản lý menu ngay bây giờ.');
+        setTimeout(() => {
+            alertEl.classList.remove('show');
+        }, 2000);
+        fetchAdminMenu();
+    } else if (pass) {
+        showAdminAlert(alertEl, 'error', 'Sai mật khẩu! Vui lòng thử lại.');
+        document.getElementById('adminPass').value = '';
+        document.getElementById('adminPass').focus();
+    }
+}
+
+function changePassword() {
+    const currentPass = prompt('Nhập mật khẩu hiện tại:');
+    if (!currentPass || currentPass !== ADMIN_CONFIG.ADMIN_PASS) {
+        showAdminAlert(document.getElementById('adminAlerts'), 'error', 'Sai mật khẩu hiện tại!');
+        return;
+    }
+    
+    const newPass = prompt('Nhập mật khẩu mới (4 ký tự):');
+    if (newPass && newPass.trim() && newPass.trim().length >= 4) {
+        ADMIN_CONFIG.ADMIN_PASS = newPass.trim();
+        showAdminAlert(document.getElementById('adminAlerts'), 'success', 'Đã đổi mật khẩu thành công!');
+        setTimeout(() => {
+            resetAdminState();
+        }, 1500);
+    } else {
+        showAdminAlert(document.getElementById('adminAlerts'), 'error', 'Mật khẩu mới phải có ít nhất 4 ký tự!');
+    }
+}
+
+async function fetchAdminMenu() {
+    const alertEl = document.getElementById('loadAlert');
+    try {
+        showAdminAlert(alertEl, 'info', 'Đang tải menu từ Google Sheets...');
+        
+        const res = await fetch(`${ADMIN_CONFIG.MENU_SCRIPT_URL}?action=getMenu`, { 
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'omit',
+            headers: {
+                'Content-Type': 'text/plain',
+                'Accept': 'application/json, text/plain, */*'
+            }
+        });
+        
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status} - ${res.statusText}`);
+        }
+        
+        const responseText = await res.text();
+        
+        if (responseText.startsWith('Error:')) {
+            throw new Error(responseText.substring(6));
+        }
+        
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (parseError) {
+            throw new Error(`Không thể parse JSON: ${parseError.message}`);
+        }
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
+        if (!Array.isArray(data)) {
+            throw new Error('Phản hồi không phải là mảng JSON.');
+        }
+        
+        adminMenuData = data.map(x => ({
+            name: String(x.name ?? x.ten ?? "(Không tên)"),
+            price: Number(x.price ?? x.gia ?? 0) || 0,
+            status: String(x.status ?? x.trangThai ?? "Đang bán")
+        }));
+        
+        renderAdminMenuList();
+        showAdminAlert(alertEl, 'success', `✅ Đã tải ${adminMenuData.length} món từ Google Sheets.`);
+        
+    } catch (err) {
+        showAdminAlert(alertEl, 'error', `⚠ Lỗi tải menu: ${err.message}`);
+    }
+}
+
+function renderAdminMenuList() {
+    const container = document.getElementById('adminMenuList');
+    const term = document.getElementById('menuSearch').value.trim().toLowerCase();
+    container.innerHTML = '';
+
+    const data = adminMenuData.filter(it => !term || it.name.toLowerCase().includes(term));
+    if (!data.length) {
+        container.innerHTML = '<div class="admin-alert info show">Không có món nào khớp từ khóa.</div>';
+        return;
+    }
+
+    for (let i = 0; i < data.length; i++) {
+        const item = data[i];
+        const id = `sw_${i}`;
+        const row = document.createElement('div');
+        row.className = 'menu-item';
+        row.innerHTML = `
+            <div class="menu-name">
+                <div>${item.name}</div>
+                <div class="price">${(item.price||0).toLocaleString('vi-VN')}đ</div>
+            </div>
+            <label class="switch" title="${item.status}">
+                <input id="${id}" type="checkbox" ${item.status !== 'Hết hàng' ? 'checked' : ''}
+                  onchange="toggleItemStatus(${i}, this)">
+                <span class="slider"></span>
+            </label>
+        `;
+        container.appendChild(row);
+    }
+}
+
+async function toggleItemStatus(index, checkbox) {
+    const alertEl = document.getElementById('loadAlert');
+    const prev = adminMenuData[index].status;
+    const next = checkbox.checked ? 'Đang bán' : 'Hết hàng';
+    adminMenuData[index].status = next;
+    checkbox.disabled = true;
+
+    try {
+        showAdminAlert(alertEl, 'info', `📞 Đang cập nhật "${adminMenuData[index].name}"...`);
+        
+        const res = await fetch(ADMIN_CONFIG.MENU_SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: JSON.stringify({ 
+                action: 'updateStatus', 
+                name: adminMenuData[index].name, 
+                status: next 
+            })
+        });
+        
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status} - ${res.statusText}`);
+        }
+        
+        const responseText = await res.text();
+        
+        if (responseText.startsWith('Error:')) {
+            throw new Error(responseText.substring(6));
+        }
+        
+        showAdminAlert(alertEl, 'success', `✅ "${adminMenuData[index].name}" → ${next}`);
+        
+        // Cập nhật menu chính
+        loadMenuFromSheets();
+        
+    } catch (err) {
+        adminMenuData[index].status = prev;
+        checkbox.checked = prev !== 'Hết hàng';
+        showAdminAlert(alertEl, 'error', `⚠ Lỗi cập nhật: ${err.message}`);
+    } finally {
+        checkbox.disabled = false;
+    }
+}
+
+// Event listeners cho admin
+document.addEventListener('DOMContentLoaded', function() {
+    const adminPass = document.getElementById('adminPass');
+    if (adminPass) {
+        adminPass.addEventListener('input', (e) => {
+            const pass = e.target.value.trim();
+            const container = document.querySelector('.password-input-container');
+            
+            if (passwordCheckTimeout) {
+                clearTimeout(passwordCheckTimeout);
+            }
+            
+            if (pass) {
+                container.classList.add('checking');
+                passwordCheckTimeout = setTimeout(() => {
+                    checkAdminPass();
+                    container.classList.remove('checking');
+                }, 500);
+            } else {
+                container.classList.remove('checking');
+            }
+        });
+
+        adminPass.addEventListener('input', (e) => {
+    const pass = e.target.value.trim();
+    const container = document.querySelector('.password-input-container');
+    
+    if (passwordCheckTimeout) {
+        clearTimeout(passwordCheckTimeout);
+    }
+    
+    if (pass.length >= 4) {
+        container.classList.add('checking');
+        passwordCheckTimeout = setTimeout(() => {
+            checkAdminPass();
+            container.classList.remove('checking');
+        }, 500);
+    } else {
+        container.classList.remove('checking');
+    }
+});
+    }
+});
+ 
+function toggleWardDropdown() {
+    const dropdown = document.getElementById('wardDropdown');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
+
+function selectWard(value) {
+    document.getElementById('ward').value = value;
+    document.getElementById('wardDropdown').style.display = 'none';
+}
+
+// Đóng dropdown khi click bên ngoài
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.custom-select-wrapper')) {
+        document.getElementById('wardDropdown').style.display = 'none';
+    }
+});
+
+ 
+        
+</script>
+
+<div class="bottom-nav">
+    <div class="nav-item" onclick="addToHomeScreen()">
+        <div class="nav-icon">➕</div>
+        <div class="nav-text">Lưu lại</div>
+    </div>
+
+    <div class="nav-item" onclick="openZaloFromNav()">
+        <div class="nav-icon">💬</div>
+        <div class="nav-text">Chat Zalo</div>
+    </div>
+
+    <div class="nav-item" onclick="showCart()">
+        <div class="nav-icon" style="position: relative;">
+            🛒 <span class="cart-badge" id="cartBadge">0</span>
+        </div>
+        <div class="nav-text">Giỏ hàng</div>
+    </div>
+
+    <div class="nav-item" onclick="window.location.href='tel:0909112233'">
+        <div class="nav-icon">📞</div>
+        <div class="nav-text">Gọi điện</div>
+    </div>
+
+    <div class="nav-item" onclick="showShopInfoPopup()">
+        <div class="nav-icon">🏪</div>
+        <div class="nav-text">TT Quán</div>
+    </div>
+</div>
+</body>
+</html>	
